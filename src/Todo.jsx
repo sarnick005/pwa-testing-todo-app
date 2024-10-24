@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { PlusCircle, Pencil, Save, X, Trash2 } from "lucide-react";
+import { PlusCircle, Pencil, Save, X, Trash2, CheckCircle } from "lucide-react";
 
 const Todo = () => {
   const [todos, setTodos] = useState([]);
@@ -7,9 +7,20 @@ const Todo = () => {
   const [editingId, setEditingId] = useState(null);
   const [editingText, setEditingText] = useState("");
 
+  const getCurrentTimestamp = () => new Date().toLocaleString();
+
   const addTodo = () => {
     if (input.trim()) {
-      setTodos([...todos, { id: Date.now(), text: input.trim() }]);
+      setTodos([
+        ...todos,
+        {
+          id: Date.now(),
+          text: input.trim(),
+          completed: false,
+          createdAt: getCurrentTimestamp(),
+          updatedAt: null
+        }
+      ]);
       setInput("");
     }
   };
@@ -33,7 +44,9 @@ const Todo = () => {
     if (editingText.trim()) {
       setTodos(
         todos.map((todo) =>
-          todo.id === id ? { ...todo, text: editingText.trim() } : todo
+          todo.id === id
+            ? { ...todo, text: editingText.trim(), updatedAt: getCurrentTimestamp() }
+            : todo
         )
       );
       setEditingId(null);
@@ -41,11 +54,21 @@ const Todo = () => {
     }
   };
 
+  const toggleCompleted = (id) => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id
+          ? { ...todo, completed: !todo.completed, updatedAt: getCurrentTimestamp() }
+          : todo
+      )
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-blue-100 p-4">
       <div className="max-w-md mx-auto bg-white rounded-xl shadow-xl overflow-hidden">
         <div className="p-6">
-          <h1 className="text-2xl font-bold text-center text-blue-600 mb-6">
+          <h1 className="text-2xl font-bold text-center text-red-600 mb-6">
             My Todo List
           </h1>
 
@@ -72,11 +95,13 @@ const Todo = () => {
               {todos.map((todo) => (
                 <li
                   key={todo.id}
-                  className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md"
+                  className={`p-3 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md ${
+                    todo.completed ? "bg-green-100" : "bg-white"
+                  }`}
                 >
                   <div className="flex items-center justify-between gap-2 flex-wrap">
                     {editingId === todo.id ? (
-                      <div className="flex-1 flex gap-2">
+                      <div className="flex-1 flex gap-2 min-w-0">
                         <input
                           type="text"
                           value={editingText}
@@ -98,8 +123,24 @@ const Todo = () => {
                       </div>
                     ) : (
                       <>
-                        <span className="flex-1 break-words">{todo.text}</span>
+                        <span
+                          className={`flex-1 break-words ${
+                            todo.completed ? "line-through text-gray-500" : ""
+                          }`}
+                        >
+                          {todo.text}
+                        </span>
                         <div className="flex gap-2">
+                          <button
+                            onClick={() => toggleCompleted(todo.id)}
+                            className={`p-2 rounded-lg transition-colors duration-200 ${
+                              todo.completed
+                                ? "bg-blue-500 hover:bg-blue-600 text-white"
+                                : "bg-green-500 hover:bg-green-600 text-white"
+                            }`}
+                          >
+                            <CheckCircle size={16} />
+                          </button>
                           <button
                             onClick={() => startEditTodo(todo)}
                             className="p-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors duration-200"
@@ -115,6 +156,10 @@ const Todo = () => {
                         </div>
                       </>
                     )}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-2">
+                    Created: {todo.createdAt}
+                    {todo.updatedAt && <span> | Updated: {todo.updatedAt}</span>}
                   </div>
                 </li>
               ))}
