@@ -8,10 +8,22 @@
     <meta name="description" content="A Simple Todo PWA Application" />
     <link rel="apple-touch-icon" href="/icon-192x192.png" />
     <link rel="manifest" href="/manifest.json" />
+    <!-- Add iOS meta tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Todo PWA">
+    <!-- Add Safari pinned tab icon -->
+    <link rel="mask-icon" href="/icon-192x192.png" color="#5bbad5">
     <title>Todo PWA</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <!-- Add no-script fallback -->
+    <noscript>
+      <div style="text-align: center; padding: 20px;">
+        Please enable JavaScript to run this application.
+      </div>
+    </noscript>
   </body>
 </html>
